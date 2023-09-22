@@ -1,0 +1,98 @@
+blueprint:
+  name: Motion activated light
+  description: Turn on a light for N minutes with X brightness when motion is detected.
+  domain: automation
+  author: ludeeus
+  something: ""
+  input:
+    motion_entity:
+      name: Motion entity
+      description: The Motion sensor to trigger on
+      selector:
+        entity:
+          filter:
+            domain: binary_sensor
+            device_class: motion
+    light_entity:
+      name: Light entity
+      description: The light that should be controlled
+      selector:
+        entity:
+          filter:
+            domain: light
+    minutes:
+      name: Minuttes
+      description: How long should the light stay on for
+      default: 3
+      selector:
+        number:
+          max: 60
+          min: 0
+    brightness:
+      name: Default Brightness
+      description: What brightness should the light be set to on motion
+      default: 70
+      selector:
+        number:
+          max: 100
+          min: 1
+          unit_of_measurement: "%"
+    evening_brightness:
+      name: Evening Brightness
+      description: What brightness should the light be set to on motion
+      default: 50
+      selector:
+        number:
+          max: 100
+          min: 1
+          unit_of_measurement: "%"
+    evening_start:
+      name: Evening Start
+      description: When is the evening starting?
+      default: ""
+      selector:
+        time:
+    condition_block:
+      name: Turn on Conditions
+      description: Add in any optional conditions that would need to be True before the action sequense runs.
+      default: []
+      selector:
+        condition:
+    turn_off_condition_block:
+      name: Turn off Conditions
+      description: Add in any optional conditions that would need to be True before the turn off action runs.
+      default: []
+      selector:
+        condition:
+
+mode: restart
+variables:
+  brightness: !input brightness
+  evening_brightness: !input evening_brightness
+  evening_start: !input evening_start
+
+trigger:
+  - platform: state
+    entity_id: !input motion_entity
+    to: 'on'
+
+condition: !input condition_block
+
+action:
+  - service: light.turn_on
+    data:
+      brightness_pct: "{{ evening_brightness if evening_start and now() > today_at(evening_start) else brightness }}"
+    target:
+      entity_id: !input light_entity
+  - wait_for_trigger:
+    - platform: state
+      entity_id: !input motion_entity
+      to: "off"
+      for:
+        minutes: !input minutes
+  - if: !input turn_off_condition_block
+    then:
+    - service: light.turn_off
+      data: {}
+      target:
+        entity_id: !input light_entity

@@ -1,0 +1,4 @@
+{
+	"name": "ludeeus/motion-activated-lights-blueprint",
+	"image": "mcr.microsoft.com/devcontainers/base:bullseye"
+}

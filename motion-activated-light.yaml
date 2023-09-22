@@ -3,7 +3,7 @@ blueprint:
   description: Turn on a light for N minutes with X brightness when motion is detected.
   domain: automation
   author: ludeeus
-  something: ""
+  homeassistant: "2023.6.0"
   input:
     motion_entity:
       name: Motion entity

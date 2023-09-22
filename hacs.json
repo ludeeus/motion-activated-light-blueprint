@@ -1,0 +1,6 @@
+{
+    "name": "Motion activated light",
+    "blueprint_type": "automation",
+    "file_name": "motion-activated-light.yaml",
+    "homeassistant": "2020.12.0"
+}

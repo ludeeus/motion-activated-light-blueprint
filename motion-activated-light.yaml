@@ -14,12 +14,12 @@ blueprint:
           filter:
             domain: binary_sensor
             device_class: motion
-    light_entity:
-      name: Light entity
-      description: The light that should be controlled
+    light_target:
+      name: Light targets
+      description: The lights that should be controlled
       selector:
-        entity:
-          filter:
+        target:
+          entity:
             domain: light
     minutes:
       name: Minuttes
@@ -83,8 +83,7 @@ action:
   - service: light.turn_on
     data:
       brightness_pct: "{{ evening_brightness if evening_start and now() > today_at(evening_start) else brightness }}"
-    target:
-      entity_id: !input light_entity
+    target: !input light_target
   - wait_for_trigger:
     - platform: state
       entity_id: !input motion_entity
@@ -95,5 +94,4 @@ action:
     then:
     - service: light.turn_off
       data: {}
-      target:
-        entity_id: !input light_entity
+      target: !input light_target
